@@ -73,6 +73,11 @@ namespace EPPPlus_Spring
                 throw;
             }
         }
+        
+        private static void CalculateCells(ExcelRangeBase excelRange)
+        {
+            excelRange.Calculate(new ExcelCalculationOption {AllowCircularReferences = true});
+        }
 
         private static (Result leftResult, Result rightResult) GetResult(ExcelWorksheet sheet)
         {
@@ -91,19 +96,6 @@ namespace EPPPlus_Spring
             return (GetResult(leftResultValues), GetResult(rightResultValues));
         }
 
-        private static void CalculateCells(ExcelRangeBase excelRange)
-        {
-            excelRange.Calculate(new ExcelCalculationOption {AllowCircularReferences = true});
-        }
-
-        private static ExcelRange GetCells(this ExcelWorksheet sheet, int fromRow, int fromCol, int toRow,
-            int toCol)
-        {
-            return sheet.Cells[fromRow, fromCol, toRow, toCol];
-        }
-
-        private static List<object?> GetCellValues(ExcelRange range, bool removeNull = false)
-            => range.Select(c => c.GetValue<object?>()).Where(c => c != null).ToList();
 
         private static Result GetResult(IEnumerable<object?> propertiesToMap)
         {
@@ -123,5 +115,9 @@ namespace EPPPlus_Spring
 
             return result;
         }
+        
+        private static List<object?> GetCellValues(ExcelRange range, bool removeNull = false)
+            => range.Select(c => c.GetValue<object?>()).Where(c => c != null).ToList();
+
     }
 }
