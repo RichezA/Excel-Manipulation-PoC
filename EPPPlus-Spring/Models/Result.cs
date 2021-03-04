@@ -2,15 +2,15 @@
 {
     public class Result
     {
-        public int Number { get; set; }
+        public double Number { get; set; }
         
         public string CoilDir { get; set; }
         
-        public int Id { get; set; }
+        public double Id { get; set; }
         
         public string Spring { get; set; }
         
-        public string Length { get; set; }
+        public object Length { get; set; }
         
         public double Turns { get; set; }
         
