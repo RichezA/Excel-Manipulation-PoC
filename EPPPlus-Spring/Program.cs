@@ -77,15 +77,15 @@ namespace EPPPlus_Spring
         private static (Result leftResult, Result rightResult) GetResult(ExcelWorksheet sheet)
         {
             // Fetch cells
-            var leftResultCells = sheet.GetCells(18, 1, 18, 13);
-            var rightResultCells = sheet.GetCells(19, 1, 19, 13);
+            var resultCells = sheet.Cells[18, 1, 19, 13];
             
             // Calculate result cells
-            CalculateCells(sheet.Cells[18, 1, 19, 13]);
+            CalculateCells(resultCells);
 
             // Fetch values.
-            var leftResultValues = GetCellValues(leftResultCells, removeNull: true);
-            var rightResultValues = GetCellValues(rightResultCells, removeNull: true);
+            var resultValues = GetCellValues(resultCells, removeNull: true);
+            var leftResultValues = resultValues.Take(resultValues.Count / 2);
+            var rightResultValues = resultValues.Skip(resultValues.Count / 2);
             
             // Return result.
             return (GetResult(leftResultValues), GetResult(rightResultValues));
@@ -105,7 +105,7 @@ namespace EPPPlus_Spring
         private static List<object?> GetCellValues(ExcelRange range, bool removeNull = false)
             => range.Select(c => c.GetValue<object?>()).Where(c => c != null).ToList();
 
-        private static Result GetResult(List<object?> propertiesToMap)
+        private static Result GetResult(IEnumerable<object?> propertiesToMap)
         {
             var result = new Result();
             var properties = result.GetType().GetProperties();
