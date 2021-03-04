@@ -23,7 +23,7 @@ namespace EPPPlus_Spring
 
             watcher.Start();
             Console.WriteLine(watcher.Elapsed);
-            var results = package.Workbook.CalculateSpring(3, 1);
+            var results = package.Workbook.CalculateSpring(2, 2);
             Console.WriteLine(watcher.Elapsed);
             watcher.Stop();
         }
@@ -76,7 +76,7 @@ namespace EPPPlus_Spring
         
         private static void CalculateCells(ExcelRangeBase excelRange)
         {
-            excelRange.Calculate(new ExcelCalculationOption {AllowCircularReferences = true});
+            excelRange.Calculate(new ExcelCalculationOption { AllowCircularReferences = true});
         }
 
         private static (Result leftResult, Result rightResult) GetResult(ExcelWorksheet sheet)
@@ -99,21 +99,37 @@ namespace EPPPlus_Spring
 
         private static Result GetResult(IEnumerable<object?> propertiesToMap)
         {
-            var result = new Result();
-            var properties = result.GetType().GetProperties();
-
-            if (properties.Length != propertiesToMap.Count())
+            var props = propertiesToMap.ToArray();
+            if (typeof(Result).GetProperties().Length < props.Length)
             {
                 return null;
             }
 
-            foreach (var (prop, index) in propertiesToMap.Select((val, ind) => (val, ind)))
+            if (double.TryParse(props[0]?.ToString(), out var number) &&
+                props[1]?.ToString() is { } coilDir &&
+                double.TryParse(props[2]?.ToString(), out var id) &&
+                props[3]?.ToString() is { } spring &&
+                props[4] is { } length &&
+                double.TryParse(props[5]?.ToString(), out var turns) &&
+                double.TryParse(props[6]?.ToString(), out var weight) &&
+                double.TryParse(props[7]?.ToString(), out var space) &&
+                double.TryParse(props[8]?.ToString(), out var freeSpace))
             {
-                var property = properties[index];
-                property.SetValue(result, prop);
+                return new Result
+                {
+                    Number = number,
+                    CoilDir = coilDir,
+                    Id = id,
+                    Spring = spring,
+                    Length = length,
+                    Turns = turns,
+                    Weight = weight,
+                    Space = space,
+                    FreeSpace = freeSpace
+                };
             }
 
-            return result;
+            return null;
         }
         
         private static List<object?> GetCellValues(ExcelRange range, bool removeNull = false)
